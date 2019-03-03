@@ -33,7 +33,7 @@ export default {
   data() {
     return {
       loaded: false,
-      user: "joost",
+      user: "daen",
       hostname: "portfolio",
       location: "~",
       inputData: "",
