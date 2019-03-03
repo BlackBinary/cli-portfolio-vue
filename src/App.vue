@@ -4,16 +4,22 @@
 
     <div class="console" v-if="loaded" @click="focusInput()">
       <div class="line" v-for="(line, index) in oldLines" v-bind:key="index">
-        <span>{{ line }}</span>
+        <span v-html="line"></span>
       </div>
       <div class="line">
         <div class="host">{{ host }}</div>
-        <div class="directory">{{ directory }}</div>
+        <label class="directory" for="directory">{{ directory }}</label>
+        <div id="cmd">
+          <span>{{ input }}</span>
+          <div id="cursor"></div>
+        </div>
         <input
           ref="consoleInput"
+          id="directory"
           type="text"
           class="pointer"
           v-model="input"
+          autofocus
           @keydown.enter="execute"
         >
       </div>
@@ -27,7 +33,7 @@ export default {
   data() {
     return {
       loaded: false,
-      user: "daen",
+      user: "joost",
       hostname: "portfolio",
       location: "~",
       inputData: "",
@@ -40,7 +46,12 @@ export default {
         "###        also this is my first attempt at       ###",
         "###    ever creating something awesome with css   ###",
         "#####################################################"
-      ]
+      ],
+      files: {
+        userRoot: [
+          'Photos', 'Portfolio', 'Private', 'Work'
+        ]
+      }
     };
   },
   computed: {
@@ -74,6 +85,11 @@ export default {
         case "help":
           cmdOutput =
             "Welcome to the prompt. Available command are: whoami, whatsnext, ls, cd, explain";
+          break;
+        case "ls":
+          if (this.location === '~') {
+            cmdOutput = `<span class="color-white">${this.files.userRoot.join(',').replace(/,/g, '  ')}</span>`;
+          }
           break;
         case "whoami":
           cmdOutput = `${this.user}`;
@@ -117,7 +133,7 @@ export default {
 .console {
   height: 100vh;
   width: 100vw;
-  background: #000;
+  background: black;
 }
 .line {
   line-height: 1.1;
@@ -141,5 +157,34 @@ export default {
 }
 .directory {
   color: teal;
+}
+
+
+#cmd {
+  font-size: 100%;
+  color: greenyellow;
+  display: flex;
+  align-items: center;
+}
+#cmd span {
+  float: left;
+  padding-left: 3px;
+  white-space: pre;
+}
+#cursor {
+  float: left;
+  width: 7px;
+  height: 15px;
+  margin-left: 2px;
+  background: white;
+}
+input {
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
+
+.color-white {
+  color: white;
 }
 </style>
