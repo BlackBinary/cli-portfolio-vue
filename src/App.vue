@@ -4,7 +4,7 @@
 
     <div class="console" v-if="loaded" @click="focusInput()">
       <div class="line" v-for="(line, index) in oldLines" v-bind:key="index">
-        <span>{{ index }} {{ line }}</span>
+        <span>{{ line }}</span>
       </div>
       <div class="line">
         <div class="host">{{ host }}</div>
@@ -31,7 +31,8 @@ export default {
       hostname: "portfolio",
       location: "~",
       inputData: "",
-      oldLines: [
+      oldLines: [],
+      motdLines: [
         "Welcome 1337 to the worlds most awesome web console",
         "I am currently trying to actually make this thing happen",
         "#####################################################",
@@ -71,19 +72,26 @@ export default {
       let cmdOutput = "";
       switch (input) {
         case "help":
-          cmdOutput = "Welcome to the prompt. Available command are: whoami, whatsnext, ls, cd, explain";
+          cmdOutput =
+            "Welcome to the prompt. Available command are: whoami, whatsnext, ls, cd, explain";
           break;
-          case "whoami":
+        case "whoami":
           cmdOutput = `${this.user}`;
           break;
+        case "clear":
+          this.oldLines = [];
+          break;
         default:
-          cmdOutput = `${input} is not an available command`;
+          cmdOutput = `Command '${input}' is not an available command`;
           break;
       }
       return cmdOutput;
     }
   },
   mounted() {
+    this.motdLines.forEach(line => {
+      this.oldLines.push(line);
+    });
     setTimeout(() => {
       this.loaded = true;
     }, 500);
