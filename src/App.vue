@@ -1,28 +1,137 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <div class="loader" v-if="!loaded">Please stand by, loading webconsole...</div>
+
+    <div class="console" v-if="loaded" @click="focusInput()">
+      <div class="line" v-for="(line, index) in oldLines" v-bind:key="index">
+        <span>{{ index }} {{ line }}</span>
+      </div>
+      <div class="line">
+        <div class="host">{{ host }}</div>
+        <div class="directory">{{ directory }}</div>
+        <input
+          ref="consoleInput"
+          type="text"
+          class="pointer"
+          v-model="input"
+          @keydown.enter="execute"
+        >
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
 export default {
-  name: 'app',
-  components: {
-    HelloWorld
+  name: "app",
+  data() {
+    return {
+      loaded: false,
+      user: "daen",
+      hostname: "portfolio",
+      location: "~",
+      inputData: "",
+      oldLines: [
+        "Welcome 1337 to the worlds most awesome web console",
+        "I am currently trying to actually make this thing happen",
+        "#####################################################",
+        "###           This might actually work            ###",
+        "###        also this is my first attempt at       ###",
+        "###    ever creating something awesome with css   ###",
+        "#####################################################"
+      ]
+    };
+  },
+  computed: {
+    host() {
+      return `${this.user}@${this.hostname}:`;
+    },
+    directory() {
+      return `${this.location}$`;
+    },
+    input: {
+      get() {
+        return this.inputData;
+      },
+      set(value) {
+        this.inputData = value;
+      }
+    }
+  },
+  methods: {
+    focusInput() {
+      this.$refs.consoleInput.focus();
+    },
+    execute() {
+      const output = this.command(this.inputData);
+      this.oldLines.push(output);
+      this.inputData = "";
+    },
+    command(input) {
+      let cmdOutput = "";
+      switch (input) {
+        case "help":
+          cmdOutput = "Welcome to the prompt. Available command are: whoami, whatsnext, ls, cd, explain";
+          break;
+          case "whoami":
+          cmdOutput = `${this.user}`;
+          break;
+        default:
+          cmdOutput = `${input} is not an available command`;
+          break;
+      }
+      return cmdOutput;
+    }
+  },
+  mounted() {
+    setTimeout(() => {
+      this.loaded = true;
+    }, 500);
   }
-}
+};
 </script>
 
 <style>
+* {
+  margin: 0;
+}
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  font-family: "Inconsolata", monospace;
+}
+.loader {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+}
+.console {
+  height: 100vh;
+  width: 100vw;
+  background: #000;
+}
+.line {
+  line-height: 1.1;
+  font-size: 120%;
+  color: greenyellow;
+  display: flex;
+  white-space: pre;
+}
+.host {
+}
+.pointer {
+  background: #000;
+  color: #fff;
+  border: 0;
+  font-family: "Inconsolata", monospace;
+  font-size: 100%;
+  line-height: 1;
+}
+.pointer:focus {
+  outline: none;
+}
+.directory {
+  color: teal;
 }
 </style>
